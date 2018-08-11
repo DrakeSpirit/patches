@@ -1,6 +1,6 @@
 package me.drakespirit.patches.pollers;
 
-import me.drakespirit.patches.Config;
+import me.drakespirit.patches.config.Config;
 
 public interface Poller {
 

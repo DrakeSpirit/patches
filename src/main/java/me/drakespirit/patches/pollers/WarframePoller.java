@@ -2,12 +2,13 @@ package me.drakespirit.patches.pollers;
 
 import com.overzealous.remark.Options;
 import com.overzealous.remark.Remark;
-import me.drakespirit.patches.Config;
+import me.drakespirit.patches.config.Config;
 import me.drakespirit.patches.DiscordPusher;
 import me.drakespirit.patches.Patchnote;
 import me.drakespirit.patches.readers.Item;
 import me.drakespirit.patches.readers.RSSReader;
 
+import java.io.IOException;
 import java.util.List;
 
 public class WarframePoller implements Poller {
@@ -28,8 +29,20 @@ public class WarframePoller implements Poller {
     @Override
     public void poll() {
         List<Item> feed = rssReader.attemptRead();
-        Patchnote patchnote = convertToPatchnote(feed.get(0));
-        DiscordPusher.push(patchnote, config.getWebhook());
+        if(feed.isEmpty()) {
+            return;
+        }
+
+        Item mostRecent = feed.get(0);
+        if(config.isNewer(mostRecent.getPubDate())) {
+            Patchnote patchnote = convertToPatchnote(mostRecent);
+            try {
+                DiscordPusher.push(patchnote, config.getWebhook());
+                config.setLastUpdate(mostRecent.getPubDate());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private Patchnote convertToPatchnote(Item item) {

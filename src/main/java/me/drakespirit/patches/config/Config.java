@@ -1,13 +1,15 @@
-package me.drakespirit.patches;
+package me.drakespirit.patches.config;
 
 import java.time.ZonedDateTime;
 
 public class Config {
 
+    private ConfigManager configManager;
     private String webhook;
     private ZonedDateTime lastUpdate;
 
-    public Config(String webhook, ZonedDateTime lastUpdate) {
+    public Config(ConfigManager configManager, String webhook, ZonedDateTime lastUpdate) {
+        this.configManager = configManager;
         this.webhook = webhook;
         this.lastUpdate = lastUpdate;
     }
@@ -25,7 +27,12 @@ public class Config {
         }
     }
 
+    ZonedDateTime getLastUpdate() {
+        return lastUpdate;
+    }
+
     public void setLastUpdate(ZonedDateTime lastUpdate) {
         this.lastUpdate = lastUpdate;
+        configManager.saveConfigs();
     }
 }

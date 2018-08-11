@@ -2,12 +2,13 @@ package me.drakespirit.patches.pollers;
 
 import com.overzealous.remark.Options;
 import com.overzealous.remark.Remark;
-import me.drakespirit.patches.Config;
+import me.drakespirit.patches.config.Config;
 import me.drakespirit.patches.DiscordPusher;
 import me.drakespirit.patches.Patchnote;
 import me.drakespirit.patches.readers.GuildWars2ForumReader;
 import me.drakespirit.patches.readers.Item;
 
+import java.io.IOException;
 import java.util.List;
 
 public class GuildWars2Poller implements Poller {
@@ -27,8 +28,20 @@ public class GuildWars2Poller implements Poller {
     @Override
     public void poll() {
         List<Item> posts = forumReader.attemptRead();
-        Patchnote patchnote = convertToPatchnote(posts.get(0));
-        DiscordPusher.push(patchnote, config.getWebhook());
+        if(posts.isEmpty()) {
+            return;
+        }
+
+        Item mostRecent = posts.get(0);
+        if(config.isNewer(mostRecent.getPubDate())) {
+            Patchnote patchnote = convertToPatchnote(mostRecent);
+            try {
+                DiscordPusher.push(patchnote, config.getWebhook());
+                config.setLastUpdate(mostRecent.getPubDate());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private Patchnote convertToPatchnote(Item item) {

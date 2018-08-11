@@ -12,15 +12,11 @@ import java.util.List;
 
 public class DiscordPusher {
 
-    public static void push(Patchnote patchnote, String url) {
+    public static void push(Patchnote patchnote, String url) throws IOException {
         List<String> jsons = convertPatchnoteToJson(patchnote);
-        jsons.forEach(json -> {
-            try {
-                sendPost(json, url);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
+        for(String json : jsons) {
+            sendPost(json, url);
+        }
     }
 
     private static List<String> convertPatchnoteToJson(Patchnote patchnote) {
