@@ -3,10 +3,7 @@ package me.drakespirit.patches;
 
 import me.drakespirit.patches.config.Config;
 import me.drakespirit.patches.config.ConfigManager;
-import me.drakespirit.patches.pollers.FactorioPoller;
-import me.drakespirit.patches.pollers.GuildWars2Poller;
-import me.drakespirit.patches.pollers.Poller;
-import me.drakespirit.patches.pollers.WarframePoller;
+import me.drakespirit.patches.pollers.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,12 +17,14 @@ public class Main {
     private static List<Poller> pollers = new ArrayList<>();
 
     public static void main(String[] args) {
+        
         ConfigManager configManager = new ConfigManager();
 
+        initPoller(configManager, new Diablo3Poller(), "diablo3");
         initPoller(configManager, new FactorioPoller(), "factorio");
         initPoller(configManager, new GuildWars2Poller(), "guildwars2");
         initPoller(configManager, new WarframePoller(), "warframe");
-
+        
         final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
         executorService.scheduleAtFixedRate(Main::pollAll, 0, 1, TimeUnit.MINUTES);
     }
