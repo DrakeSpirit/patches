@@ -1,0 +1,5 @@
+version: '3'
+services:
+  patches:
+    build: .
+    image: drakespirit/patches:2.0
