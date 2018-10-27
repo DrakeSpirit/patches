@@ -29,13 +29,17 @@ public class FactorioPoller implements Poller {
 
     @Override
     public void poll() {
+        System.out.println("Factorio: Polling...");
+
         List<Item> feed = filterToPatchnotes(atomReader.attemptRead());
         if(feed.isEmpty()) {
+            System.out.println("Factorio: No notes found.");
             return;
         }
 
         Item mostRecent = feed.get(0);
         if(config.isNewer(mostRecent.getPubDate())) {
+            System.out.println("Factorio: New patchnote found, pushing to Discord.");
             Patchnote patchnote = convertToPatchnote(mostRecent);
             try {
                 DiscordPusher.push(patchnote, config.getWebhook());

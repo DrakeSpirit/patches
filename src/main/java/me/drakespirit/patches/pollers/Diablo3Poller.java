@@ -27,13 +27,17 @@ public class Diablo3Poller implements Poller {
     
     @Override
     public void poll() {
+        System.out.println("Diablo 3: Polling...");
+        
         List<Item> posts = patchnoteReader.attemptRead();
         if(posts.isEmpty()) {
+            System.out.println("Diablo 3: No notes found.");
             return;
         }
     
         Item mostRecent = posts.get(0);
         if(config.isNewer(mostRecent.getPubDate())) {
+            System.out.println("Diablo 3: New patchnote found, pushing to Discord.");
             Patchnote patchnote = convertToPatchnote(mostRecent);
             try {
                 DiscordPusher.push(patchnote, config.getWebhook());

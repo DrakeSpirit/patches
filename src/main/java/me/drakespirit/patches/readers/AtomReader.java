@@ -10,19 +10,24 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class AtomReader {
 
-    private final DateTimeFormatter pubDateFormatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
+    private DateTimeFormatter pubDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss", Locale.ENGLISH);
     private URL atomURL;
 
     public AtomReader(String url) {
         try {
             atomURL = new URL(url);
+            if(pubDateFormatter.getZone() == null) {
+                pubDateFormatter = pubDateFormatter.withZone(ZoneId.systemDefault());
+            }
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
@@ -65,7 +70,7 @@ public class AtomReader {
                         break;
                     case "published":
                         String pubDate = getEventCharacters(xmlEventReader.nextEvent());
-                        currentItem.setPubDate(ZonedDateTime.parse(pubDate, pubDateFormatter));
+                        currentItem.setPubDate(ZonedDateTime.parse(pubDate, pubDateFormatter.withZone(ZoneId.systemDefault())));
                         break;
                 }
             }

@@ -28,13 +28,17 @@ public class WarframePoller implements Poller {
 
     @Override
     public void poll() {
+        System.out.println("Warframe: Polling...");
+
         List<Item> feed = rssReader.attemptRead();
         if(feed.isEmpty()) {
+            System.out.println("Warframe: No notes found.");
             return;
         }
 
         Item mostRecent = feed.get(0);
         if(config.isNewer(mostRecent.getPubDate())) {
+            System.out.println("Warframe: New patchnote found, pushing to Discord.");
             Patchnote patchnote = convertToPatchnote(mostRecent);
             try {
                 DiscordPusher.push(patchnote, config.getWebhook());

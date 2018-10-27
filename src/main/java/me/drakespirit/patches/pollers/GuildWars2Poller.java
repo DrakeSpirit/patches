@@ -27,13 +27,17 @@ public class GuildWars2Poller implements Poller {
 
     @Override
     public void poll() {
+        System.out.println("Guild Wars 2: Polling...");
+
         List<Item> posts = forumReader.attemptRead();
         if(posts.isEmpty()) {
+            System.out.println("Guild Wars 2: No notes found.");
             return;
         }
 
         Item mostRecent = posts.get(0);
         if(config.isNewer(mostRecent.getPubDate())) {
+            System.out.println("Guild Wars 2: New patchnote found, pushing to Discord.");
             Patchnote patchnote = convertToPatchnote(mostRecent);
             try {
                 DiscordPusher.push(patchnote, config.getWebhook());

@@ -13,7 +13,8 @@ import java.util.List;
 import java.util.Locale;
 
 public class Diablo3PatchnoteReader {
-    
+
+    public static final String USER_AGENT = "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:56.0) Gecko/20100101 Firefox/56.0";
     private final DateTimeFormatter pubDateFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss Z",Locale.ENGLISH);
     
     private final String URL_BASE = "https://eu.diablo3.com";
@@ -32,7 +33,7 @@ public class Diablo3PatchnoteReader {
     }
     
     private String getLatestSubpatchUrl() throws IOException {
-        Document document = Jsoup.connect(URL_BASE + URL_PATCHNOTES).userAgent("Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:56.0) Gecko/20100101 Firefox/56.0").get();
+        Document document = Jsoup.connect(URL_BASE + URL_PATCHNOTES).userAgent(USER_AGENT).get();
         Elements subpatches = document.getElementsByClass("subpatches-nav");
         Element latest = subpatches.get(0).getElementsByTag("a").last();
         return URL_BASE + latest.attributes().get("href");
@@ -40,7 +41,7 @@ public class Diablo3PatchnoteReader {
     
     private Item getLatestSubpatch(String subpatchUrl) throws IOException {
         Item item = new Item();
-        Document document = Jsoup.connect(subpatchUrl).userAgent("Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:56.0) Gecko/20100101 Firefox/56.0").get();
+        Document document = Jsoup.connect(subpatchUrl).userAgent(USER_AGENT).get();
         Element patchnote = document.getElementsByClass("sub-patches").first();
         
         item.setLink(subpatchUrl);
