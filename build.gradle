@@ -24,7 +24,7 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 
-task copyDependencies( type: Copy ) {
+task copyDependencies(type: Copy) {
     into "$buildDir/libs"
     from configurations.runtime
 }
@@ -32,8 +32,16 @@ task copyDependencies( type: Copy ) {
 jar {
     manifest {
         attributes(
-                'Main-Class': 'me.drakespirit.patches.Main',
+                'Main-Class': mainClassName,
                 "Class-Path": configurations.compile.collect { it.getName() }.join(' ')
         )
     }
+}
+
+task dockerComposeUp(type:Exec, dependsOn:['jar', 'copyDependencies']) {
+    commandLine 'docker-compose', 'up', '-d'
+}
+
+task dockerComposeStop(type:Exec) {
+    commandLine 'docker-compose', 'stop'
 }
